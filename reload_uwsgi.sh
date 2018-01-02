@@ -1,7 +1,7 @@
 #! /bin/bash
-for i in `ps -ef | grep -v "$0" | grep uwsgi | grep -v "grep" | awk '{print $2}'`;
+for id in `sudo cat /var/run/cdn.pid`;
 do
-    sudo kill -9 $i
+    sudo kill -9 $id
 done
 sleep 1
 

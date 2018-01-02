@@ -1,5 +1,5 @@
 (function(d) {
-  var base = "//www.igiari.moe";
+  var base = "//cdn.igiari.moe";
   var i, count = 0;
 
   function queryclass(name) {
