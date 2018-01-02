@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta 
+        name="viewport" 
+        content="width=device-width, 
+                        initial-scale=1.0, 
+                        maximum-scale=1.0, 
+                        user-scalable=no",
+        charset="utf-8">
+
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    {% load static %}
+    <script src="{% static 'csrf.js' %}"></script>
+
+    <script type="text/javascript">
+        window.onload = function(){
+            var padding_right = parseInt($(".steam_card_main").css("padding-right"));
+            var old_width = parseInt($(".steam_card_main").css("width"));
+            var new_width = old_width - padding_right;
+            $(".steam_card_main").css("width", new_width);
+
+            var padding_bottom = parseInt($(".steam_card_main").css("padding-bottom"));
+            var height = $(".steam_card_top").outerHeight() + $(".steam_card_bottom").outerHeight();
+            var iframe_height = height + padding_bottom;
+
+            parent.postMessage({
+                height: iframe_height,
+                sender: '{{ info.identity }}' || '*'
+            }, '*');
+        }
+    </script>
+
+    <link href="{% static 'css/steam.css' %}" media="all" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet">
+    
+    <title>{{ info.basic_info.persona_name }} -- Steam Card</title>
+    <!-- Make Steam, Not War -->
+
+</head>
+
+<body>
+    <div class="steam_card_main" style="width:{{ info.width }}">
+        <div class="steam_card_top">
+            {% if info.basic_info and info.profile_info %}
+            <a class="player_avatar" href="{{ info.profile_info.profiles_url }}" target="_blank">
+                <img src="{{ info.basic_info.avatar_m }}">
+            </a>
+            <div class="persona_info">
+                <a class="persona_name" href="{{ info.profile_info.profiles_url }}" target="_blank">
+                    <span class="actual_persona_name">{{ info.basic_info.persona_name }}</span>
+                </a>
+                <a class="persona_level" href="{{ info.profile_info.badges_link_total }}" target="_blank">
+                    Level 
+                    <div class="friendPlayerLevel lvl_{{ info.profile_info.frame_level }}">
+                        <span class="friendPlayerLevelNum">{{ info.profile_info.level }}</span>
+                    </div>
+                </a>
+                <div class="profile_header_summary">
+                    <span class="profile_summary">{{ info.profile_info.desc | linebreaksbr }}</span>
+                </div>
+                <div class="profile_count_link_preview">
+                    {% for badge in info.profile_info.badges %}
+                    <div class="profile_badges_badge" title="{{ badge.desc }}">
+                        <a href="{{ badge.link }}" target="_blank">
+                            <img src="{{ badge.img }}"></img>
+                        </a>
+                    </div>
+                    {% endfor %}
+                    {% if info.profile_info.undisplay_badges_count > 0 %}
+                    <div class="profile_badges_badge">
+                        <a href="{{ info.profile_info.badges_link_total }}" target="_blank">
+                            {% if info.profile_info.undisplay_badges_count >= 100000 %}
+                            <span style="font-size: 14px">+{{ info.profile_info.undisplay_badges_count }}</span>
+                            {% elif info.profile_info.undisplay_badges_count >= 10000 %}
+                            <span style="font-size: 16px">+{{ info.profile_info.undisplay_badges_count }}</span>
+                            {% elif info.profile_info.undisplay_badges_count >= 1000 %}
+                            <span style="font-size: 20px">+{{ info.profile_info.undisplay_badges_count }}</span>
+                            {% elif info.profile_info.undisplay_badges_count >= 100 %}
+                            <span style="font-size: 24px">+{{ info.profile_info.undisplay_badges_count }}</span>
+                            {% else %}
+                            <span>+{{ info.profile_info.undisplay_badges_count }}</span>
+                            {% endif %}
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="error_message">
+                <div class="error_title">
+                    Ooopps, something went wrong!
+                </div>
+                <div class="error_comments">
+                    maybe you can check your steam id
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="steam_card_bottom">
+        {% for item in info.profile_info.items %}
+            <a class="profile_item_box" href="{{ item.link }}" target="_blank">
+                <div class="value">{{ item.count }}</div>
+                <div class="label">{{ item.title }}</div>
+            </a>
+        {% endfor %}
+        </div>
+    </div>
+</body>
+
+</html>

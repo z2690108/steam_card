@@ -1,0 +1,4 @@
+Django==1.11.5
+requests==2.11.0
+lxml==3.7.1
+mistune==0.8.1
